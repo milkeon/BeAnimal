@@ -7,3 +7,5 @@ recordings/
 build/
 dist/
 *.egg-info/
+*.spec
+*.zip

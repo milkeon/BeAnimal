@@ -17,6 +17,15 @@
 - 숫자키 `1~6`으로 동물 변경
 - 녹화 파일을 `recordings/`에 저장
 
+## 다운로드해서 바로 실행
+
+GitHub Releases에서 OS에 맞는 파일을 받으시면 됩니다.
+
+- macOS: `BeAnimal-macOS.zip` 안의 `BeAnimal.app`
+- Windows: `BeAnimal-Windows.zip` 안의 `BeAnimal.exe`
+
+압축을 푼 뒤 바로 실행하시면 됩니다. Python이나 VSCode는 필요 없습니다.
+
 ## 실행 방법
 
 ```bash
