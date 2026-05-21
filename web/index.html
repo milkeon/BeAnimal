@@ -419,6 +419,23 @@
         ctx.shadowBlur = 10;
         ctx.shadowOffsetY = 2;
 
+        const bodyCx = cx;
+        const bodyTop = y + h * 0.92;
+        const bodyMid = y + h * 1.48;
+        const bodyBottom = y + h * 2.18;
+        const bodyW = w * 0.92;
+        const bodyH = h * 1.28;
+        const limbW = Math.max(4, w * 0.12);
+        const limbH = Math.max(8, h * 0.42);
+
+        // 사람 전체가 동물 캐릭터처럼 보이도록 몸통/팔다리까지 먼저 그립니다.
+        ellipse(ctx, bodyCx, bodyMid, bodyW * 0.42, bodyH * 0.46, style.base, style.accent, Math.max(1.2, w * 0.01));
+        ellipse(ctx, bodyCx, bodyTop + h * 0.18, bodyW * 0.34, bodyH * 0.26, style.cheek);
+        ellipse(ctx, bodyCx - bodyW * 0.2, bodyMid + h * 0.02, limbW, limbH, style.base);
+        ellipse(ctx, bodyCx + bodyW * 0.2, bodyMid + h * 0.02, limbW, limbH, style.base);
+        ellipse(ctx, bodyCx - bodyW * 0.12, bodyBottom, limbW * 0.92, limbH * 1.05, style.base);
+        ellipse(ctx, bodyCx + bodyW * 0.12, bodyBottom, limbW * 0.92, limbH * 1.05, style.base);
+
         if (animalKey === 'cat' || animalKey === 'jindo' || animalKey === 'tiger') {
           const earLeft = [[x + w * 0.12, y], [x + w * 0.27, y - h * 0.26], [x + w * 0.38, y + h * 0.02]];
           const earRight = [[x + w * 0.62, y + h * 0.02], [x + w * 0.73, y - h * 0.26], [x + w * 0.88, y]];
