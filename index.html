@@ -592,6 +592,15 @@
         if (state.lastFaces.length) drawOverlay(state.lastFaces);
       }
 
+      function getFallbackFaces() {
+        syncCanvasSize();
+        const w = Math.max(240, overlay.width * 0.56);
+        const h = Math.max(320, overlay.height * 0.86);
+        const x = (overlay.width - w) / 2;
+        const y = overlay.height * 0.08;
+        return [{ boundingBox: { x, y, width: w, height: h } }];
+      }
+
       function buildAnimalButtons() {
         for (const key of ORDER) {
           const btn = document.createElement('button');
@@ -647,15 +656,19 @@
       }
 
       async function setupDetector() {
-        if (state.detector || !('FaceDetector' in window)) {
-          detectorState.textContent = 'FaceDetector ' + ('FaceDetector' in window ? '준비됨' : '미지원');
+        if (state.detector) {
+          detectorState.textContent = 'FaceDetector 준비됨';
+          return;
+        }
+        if (!('FaceDetector' in window)) {
+          detectorState.textContent = '대체 모드';
           return;
         }
         try {
           state.detector = new FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
           detectorState.textContent = 'FaceDetector 준비됨';
         } catch (error) {
-          detectorState.textContent = 'FaceDetector 실패';
+          detectorState.textContent = '대체 모드';
           console.warn(error);
         }
       }
@@ -674,13 +687,16 @@
             }
             drawOverlay(state.lastFaces);
           } catch (error) {
-            detectorState.textContent = '감지 오류';
+            detectorState.textContent = '대체 모드';
             console.warn(error);
           } finally {
             state.detectBusy = false;
           }
         } else if (state.previewFaces) {
           drawOverlay(state.previewFaces);
+        } else {
+          state.lastFaces = getFallbackFaces();
+          drawOverlay(state.lastFaces);
         }
         requestAnimationFrame(detectLoop);
       }
