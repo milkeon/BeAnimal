@@ -9,3 +9,6 @@ dist/
 *.egg-info/
 *.spec
 *.zip
+node_modules/
+web/node_modules/
+web/dist/
