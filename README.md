@@ -16,8 +16,10 @@ python3 -m http.server 8000
 
 - http://127.0.0.1:8000/
 
-### 2) 배포된 웹앱
+## 배포된 웹앱
 GitHub Pages 또는 다른 정적 호스팅에 올리면 바로 접속형 웹앱이 됩니다.
+
+Vercel로 가져갈 때는 *Root Directory* 를 `web` 으로 잡으세요. 이 저장소 루트에는 Python 데스크톱용 파일도 남아 있어서, 루트 그대로 import하면 Vercel이 Python 프로젝트로 잘못 인식할 수 있습니다.
 
 ## 지원 동물
 - 카피바라
