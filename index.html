@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f172a" />
+    <title>BeAnimal Web</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #07111f;
+        --bg2: #0f172a;
+        --panel: rgba(15, 23, 42, 0.82);
+        --panel-strong: rgba(15, 23, 42, 0.96);
+        --line: rgba(148, 163, 184, 0.2);
+        --text: #f8fafc;
+        --muted: #cbd5e1;
+        --soft: #94a3b8;
+        --accent: #67e8f9;
+        --accent-2: #f59e0b;
+        --good: #22c55e;
+        --warn: #fb7185;
+        --shadow: 0 18px 60px rgba(0, 0, 0, 0.34);
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(103, 232, 249, 0.16), transparent 30%),
+          radial-gradient(circle at 80% 20%, rgba(245, 158, 11, 0.14), transparent 24%),
+          linear-gradient(180deg, var(--bg), var(--bg2));
+        color: var(--text);
+      }
+
+      .app {
+        min-height: 100%;
+        display: flex;
+        align-items: stretch;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .shell {
+        width: min(1080px, 100%);
+        display: grid;
+        gap: 14px;
+      }
+
+      .hero, .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(14px);
+      }
+
+      .hero {
+        padding: 18px 18px 14px;
+      }
+
+      .title-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.7rem, 3vw, 2.5rem);
+        line-height: 1.05;
+      }
+
+      .sub {
+        margin: 8px 0 0;
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .badges {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(15, 23, 42, 0.55);
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      .badge strong { color: var(--text); }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .btn {
+        appearance: none;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(15, 23, 42, 0.8);
+        color: var(--text);
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 0.96rem;
+        cursor: pointer;
+        transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+
+      .btn:hover,
+      .btn:focus-visible {
+        transform: translateY(-1px);
+        border-color: rgba(103, 232, 249, 0.65);
+        outline: none;
+      }
+
+      .btn.primary {
+        background: linear-gradient(135deg, rgba(103, 232, 249, 0.2), rgba(103, 232, 249, 0.08));
+        border-color: rgba(103, 232, 249, 0.4);
+      }
+
+      .btn.active {
+        background: linear-gradient(135deg, rgba(103, 232, 249, 0.28), rgba(245, 158, 11, 0.14));
+        border-color: rgba(103, 232, 249, 0.9);
+        color: #ffffff;
+      }
+
+      .main-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.6fr);
+        gap: 14px;
+      }
+
+      .stage {
+        position: relative;
+        overflow: hidden;
+        border-radius: 24px;
+        border: 1px solid var(--line);
+        background: #020617;
+        aspect-ratio: 16 / 10;
+        min-height: 360px;
+      }
+
+      video,
+      canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      video {
+        object-fit: cover;
+        transform: scaleX(-1);
+      }
+
+      canvas {
+        pointer-events: none;
+      }
+
+      .hint {
+        position: absolute;
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        padding: 12px 14px;
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.66);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--muted);
+        line-height: 1.45;
+        backdrop-filter: blur(10px);
+      }
+
+      .hint strong { color: var(--text); }
+
+      .stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .stat {
+        padding: 12px;
+        border-radius: 18px;
+        background: rgba(2, 6, 23, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.09);
+      }
+
+      .stat .k {
+        font-size: 0.82rem;
+        color: var(--soft);
+        margin-bottom: 6px;
+      }
+
+      .stat .v {
+        font-size: 1rem;
+        line-height: 1.45;
+        color: var(--text);
+      }
+
+      .list {
+        display: grid;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .animal-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .note {
+        color: var(--soft);
+        font-size: 0.94rem;
+        line-height: 1.5;
+      }
+
+      .footer {
+        color: var(--soft);
+        font-size: 0.9rem;
+        padding: 2px 4px 6px;
+      }
+
+      @media (max-width: 900px) {
+        .main-grid { grid-template-columns: 1fr; }
+        .stage { aspect-ratio: 4 / 3; min-height: 300px; }
+      }
+
+      @media (max-width: 640px) {
+        .app { padding: 10px; }
+        .hero, .panel, .stage { border-radius: 18px; }
+        .badge, .btn { padding: 9px 12px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <main class="shell">
+        <section class="hero">
+          <div class="title-row">
+            <div>
+              <h1>BeAnimal Web</h1>
+              <p class="sub">브라우저에서 웹캠을 열고, 얼굴 위에 동물 필터를 씌우는 웹앱입니다. Python 설치 없이 바로 쓸 수 있게 바꿨습니다.</p>
+            </div>
+            <div class="badges">
+              <div class="badge"><strong>상태</strong> <span id="cameraState">카메라 꺼짐</span></div>
+              <div class="badge"><strong>감지</strong> <span id="detectorState">대기</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="toolbar">
+            <div class="group" id="animalButtons" aria-label="동물 선택"></div>
+            <div class="group">
+              <button class="btn primary" id="startCameraBtn">카메라 시작</button>
+              <button class="btn" id="snapshotBtn" disabled>사진 저장</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="main-grid">
+          <section class="stage panel" aria-label="카메라 미리보기">
+            <video id="video" playsinline muted autoplay></video>
+            <canvas id="overlay"></canvas>
+            <div class="hint" id="hintBox">
+              <strong>사용 방법:</strong> 카메라 시작을 누르세요. 얼굴이 보이면 자동으로 동물 필터가 덧씌워집니다.
+              <br />숫자키 <strong>1~6</strong> 또는 위 버튼으로 동물을 바꿀 수 있습니다.
+            </div>
+          </section>
+
+          <aside class="panel stack">
+            <div class="stat">
+              <div class="k">현재 동물</div>
+              <div class="v" id="currentAnimal">고양이</div>
+            </div>
+            <div class="stat">
+              <div class="k">설명</div>
+              <div class="v" id="statusText">브라우저에서 카메라 권한을 허용하면 실시간 필터를 볼 수 있습니다.</div>
+            </div>
+            <div class="stat">
+              <div class="k">지원 동물</div>
+              <div class="list note">
+                <div>카피바라 / 고양이 / 햄스터</div>
+                <div>백곰 / 진돗개 / 호랑이</div>
+              </div>
+            </div>
+            <div class="stat">
+              <div class="k">검증용 힌트</div>
+              <div class="v">브라우저 콘솔에서 <code>window.__beanimal.previewFace()</code> 를 호출하면 카메라 없이도 오버레이를 시험할 수 있습니다.</div>
+            </div>
+          </aside>
+        </section>
+
+        <div class="footer">GitHub Pages, Vercel, 로컬 정적 서버 어디든 올릴 수 있는 단일 파일 웹앱입니다.</div>
+      </main>
+    </div>
+
+    <script>
+      const ANIMALS = {
+        capybara: { label: '카피바라', base: '#9c7c57', accent: '#72593f', ear: '#ae8d6d', nose: '#594433', cheek: '#b89672', stripe: '#786047' },
+        cat: { label: '고양이', base: '#a99578', accent: '#5a4d3f', ear: '#bca889', nose: '#b97898', cheek: '#d7c9b0', stripe: '#5f5445' },
+        hamster: { label: '햄스터', base: '#aaa084', accent: '#7c715f', ear: '#c8bda7', nose: '#775c60', cheek: '#cfc3ad', stripe: '#8a7f6a' },
+        polar_bear: { label: '백곰', base: '#eeeeea', accent: '#bcc3cf', ear: '#fafaf8', nose: '#6e7888', cheek: '#ffffff', stripe: '#b7c0cf' },
+        jindo: { label: '진돗개', base: '#e0c7a5', accent: '#9e7e5f', ear: '#cfb18a', nose: '#403b3b', cheek: '#f0e2d0', stripe: '#9a7f5e' },
+        tiger: { label: '호랑이', base: '#4ba2f0', accent: '#1a1a1a', ear: '#3f8bd7', nose: '#232323', cheek: '#82b8f6', stripe: '#1a1a1a' },
+      };
+
+      const ORDER = ['capybara', 'cat', 'hamster', 'polar_bear', 'jindo', 'tiger'];
+      const ANIMAL_ALIASES = { bear: 'polar_bear', dog: 'jindo' };
+
+      const state = {
+        animalKey: 'cat',
+        stream: null,
+        detector: null,
+        running: false,
+        detectBusy: false,
+        previewFaces: null,
+        lastFaces: [],
+      };
+
+      const video = document.getElementById('video');
+      const overlay = document.getElementById('overlay');
+      const ctx = overlay.getContext('2d');
+      const animalButtons = document.getElementById('animalButtons');
+      const startCameraBtn = document.getElementById('startCameraBtn');
+      const snapshotBtn = document.getElementById('snapshotBtn');
+      const cameraState = document.getElementById('cameraState');
+      const detectorState = document.getElementById('detectorState');
+      const currentAnimal = document.getElementById('currentAnimal');
+      const statusText = document.getElementById('statusText');
+      const hintBox = document.getElementById('hintBox');
+
+      function setStatus(text) {
+        statusText.textContent = text;
+      }
+
+      function syncCanvasSize() {
+        const rect = video.getBoundingClientRect();
+        const width = Math.max(1, Math.round(rect.width * devicePixelRatio));
+        const height = Math.max(1, Math.round(rect.height * devicePixelRatio));
+        if (overlay.width !== width || overlay.height !== height) {
+          overlay.width = width;
+          overlay.height = height;
+        }
+      }
+
+      function toCanvasBox(face) {
+        const vw = video.videoWidth || overlay.width;
+        const vh = video.videoHeight || overlay.height;
+        const rect = video.getBoundingClientRect();
+        const scaleX = overlay.width / vw;
+        const scaleY = overlay.height / vh;
+        const box = face.boundingBox || face;
+        return {
+          x: box.x * scaleX,
+          y: box.y * scaleY,
+          w: box.width * scaleX,
+          h: box.height * scaleY,
+          rectWidth: rect.width,
+          rectHeight: rect.height,
+        };
+      }
+
+      function ellipse(ctx, x, y, rx, ry, fill, stroke, lineWidth = 1) {
+        ctx.beginPath();
+        ctx.ellipse(x, y, Math.max(1, rx), Math.max(1, ry), 0, 0, Math.PI * 2);
+        if (fill) {
+          ctx.fillStyle = fill;
+          ctx.fill();
+        }
+        if (stroke) {
+          ctx.lineWidth = lineWidth;
+          ctx.strokeStyle = stroke;
+          ctx.stroke();
+        }
+      }
+
+      function drawAnimalFace(ctx, box, animalKey) {
+        const style = ANIMALS[animalKey];
+        const x = box.x;
+        const y = box.y;
+        const w = box.w;
+        const h = box.h;
+        const cx = x + w / 2;
+        const cy = y + h * 0.58;
+        const rx = Math.max(1, w * 0.42);
+        const ry = Math.max(1, h * 0.5);
+
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.18)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 2;
+
+        if (animalKey === 'cat' || animalKey === 'jindo' || animalKey === 'tiger') {
+          const earLeft = [[x + w * 0.12, y], [x + w * 0.27, y - h * 0.26], [x + w * 0.38, y + h * 0.02]];
+          const earRight = [[x + w * 0.62, y + h * 0.02], [x + w * 0.73, y - h * 0.26], [x + w * 0.88, y]];
+          ctx.fillStyle = style.ear;
+          ctx.beginPath();
+          ctx.moveTo(...earLeft[0]);
+          earLeft.slice(1).forEach((pt) => ctx.lineTo(...pt));
+          ctx.closePath();
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(...earRight[0]);
+          earRight.slice(1).forEach((pt) => ctx.lineTo(...pt));
+          ctx.closePath();
+          ctx.fill();
+
+          const innerLeft = [[x + w * 0.18, y + h * 0.02], [x + w * 0.27, y - h * 0.18], [x + w * 0.34, y + h * 0.02]];
+          const innerRight = [[x + w * 0.66, y + h * 0.02], [x + w * 0.73, y - h * 0.18], [x + w * 0.82, y + h * 0.02]];
+          ctx.fillStyle = style.cheek;
+          ctx.beginPath();
+          ctx.moveTo(...innerLeft[0]);
+          innerLeft.slice(1).forEach((pt) => ctx.lineTo(...pt));
+          ctx.closePath();
+          ctx.fill();
+          ctx.beginPath();
+          ctx.moveTo(...innerRight[0]);
+          innerRight.slice(1).forEach((pt) => ctx.lineTo(...pt));
+          ctx.closePath();
+          ctx.fill();
+        } else if (animalKey === 'hamster') {
+          ellipse(ctx, x + w * 0.24, y + h * 0.06, w * 0.08, h * 0.08, style.ear);
+          ellipse(ctx, x + w * 0.76, y + h * 0.06, w * 0.08, h * 0.08, style.ear);
+        } else {
+          ellipse(ctx, x + w * 0.2, y + h * 0.03, w * 0.09, h * 0.09, style.ear);
+          ellipse(ctx, x + w * 0.8, y + h * 0.03, w * 0.09, h * 0.09, style.ear);
+        }
+
+        ellipse(ctx, cx, cy, rx, ry, style.base);
+        ellipse(ctx, cx, y + h * 0.68, w * 0.25, h * 0.2, style.cheek);
+
+        const eyeY = y + h * 0.42;
+        const eyeDx = w * 0.15;
+        const eyeR = Math.max(2, Math.min(w, h) * 0.05);
+        ellipse(ctx, cx - eyeDx, eyeY, eyeR + 2, eyeR + 2, '#f8fafc');
+        ellipse(ctx, cx + eyeDx, eyeY, eyeR + 2, eyeR + 2, '#f8fafc');
+        ellipse(ctx, cx - eyeDx, eyeY, eyeR, eyeR, '#171717');
+        ellipse(ctx, cx + eyeDx, eyeY, eyeR, eyeR, '#171717');
+
+        const noseY = y + h * 0.58;
+        const noseW = Math.max(2, w * 0.06);
+        ellipse(ctx, cx, noseY, noseW, noseW, style.nose);
+        ctx.lineWidth = Math.max(1.5, w * 0.01);
+        ctx.strokeStyle = style.accent;
+        ctx.beginPath();
+        ctx.moveTo(cx, noseY + noseW);
+        ctx.lineTo(cx - w * 0.06, noseY + h * 0.09);
+        ctx.moveTo(cx, noseY + noseW);
+        ctx.lineTo(cx + w * 0.06, noseY + h * 0.09);
+        ctx.stroke();
+
+        if (animalKey === 'cat' || animalKey === 'jindo' || animalKey === 'capybara') {
+          ctx.lineWidth = Math.max(1.4, w * 0.01);
+          ctx.strokeStyle = style.accent;
+          for (const offset of [-0.15, 0, 0.15]) {
+            const dy = h * offset * 0.15;
+            ctx.beginPath();
+            ctx.moveTo(cx - w * 0.05, y + h * 0.62 + dy);
+            ctx.lineTo(cx - w * 0.26, y + h * 0.62 + h * offset * 0.12);
+            ctx.moveTo(cx + w * 0.05, y + h * 0.62 + dy);
+            ctx.lineTo(cx + w * 0.26, y + h * 0.62 + h * offset * 0.12);
+            ctx.stroke();
+          }
+        }
+
+        if (animalKey === 'capybara') {
+          ctx.fillStyle = '#f8fafc';
+          ctx.fillRect(cx - w * 0.06, noseY + h * 0.08, w * 0.07, h * 0.08);
+          ctx.fillRect(cx + w * 0.01, noseY + h * 0.08, w * 0.07, h * 0.08);
+          ctx.strokeStyle = style.accent;
+          ctx.strokeRect(cx - w * 0.06, noseY + h * 0.08, w * 0.14, h * 0.08);
+        }
+
+        if (animalKey === 'hamster') {
+          ellipse(ctx, cx - w * 0.22, y + h * 0.63, Math.min(w, h) * 0.09, Math.min(w, h) * 0.09, style.cheek);
+          ellipse(ctx, cx + w * 0.22, y + h * 0.63, Math.min(w, h) * 0.09, Math.min(w, h) * 0.09, style.cheek);
+        }
+
+        if (animalKey === 'polar_bear') {
+          ellipse(ctx, cx, noseY + h * 0.03, w * 0.12, h * 0.09, '#fefefe');
+          ellipse(ctx, cx, noseY + h * 0.03, Math.min(w, h) * 0.03, Math.min(w, h) * 0.03, style.nose);
+        }
+
+        if (animalKey === 'jindo') {
+          ctx.lineWidth = Math.max(1.5, w * 0.012);
+          ctx.strokeStyle = style.stripe;
+          ctx.beginPath();
+          ctx.ellipse(cx, y + h * 0.23, w * 0.24, h * 0.14, 0, Math.PI, 0);
+          ctx.stroke();
+        }
+
+        if (animalKey === 'tiger') {
+          ctx.strokeStyle = style.stripe;
+          ctx.lineWidth = Math.max(2, w * 0.014);
+          for (const dx of [0.24, 0.38, 0.55, 0.7]) {
+            ctx.beginPath();
+            ctx.moveTo(x + w * dx, y + h * 0.12);
+            ctx.lineTo(x + w * (dx + 0.06), y + h * 0.22);
+            ctx.stroke();
+          }
+          ctx.beginPath();
+          ctx.ellipse(cx, y + h * 0.66, w * 0.2, h * 0.18, 0, 0, Math.PI, false);
+          ctx.stroke();
+          ellipse(ctx, cx, noseY, Math.min(w, h) * 0.025, Math.min(w, h) * 0.025, style.stripe);
+        }
+
+        ctx.restore();
+      }
+
+      function drawOverlay(faces) {
+        syncCanvasSize();
+        ctx.clearRect(0, 0, overlay.width, overlay.height);
+        if (!faces.length) {
+          ctx.save();
+          ctx.fillStyle = 'rgba(255,255,255,0.1)';
+          ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+          ctx.setLineDash([10, 10]);
+          ctx.lineWidth = 2 * devicePixelRatio;
+          ctx.strokeRect(24 * devicePixelRatio, 24 * devicePixelRatio, overlay.width - 48 * devicePixelRatio, overlay.height - 48 * devicePixelRatio);
+          ctx.setLineDash([]);
+          ctx.fillStyle = 'rgba(248,250,252,0.9)';
+          ctx.font = `${14 * devicePixelRatio}px ui-sans-serif, system-ui`;
+          ctx.fillText('얼굴이 감지되면 동물 필터가 여기에 표시됩니다.', 40 * devicePixelRatio, 64 * devicePixelRatio);
+          ctx.restore();
+          return;
+        }
+
+        for (const face of faces) {
+          const box = toCanvasBox(face);
+          ctx.save();
+          ctx.strokeStyle = 'rgba(103, 232, 249, 0.55)';
+          ctx.lineWidth = 3 * devicePixelRatio;
+          ctx.setLineDash([8 * devicePixelRatio, 8 * devicePixelRatio]);
+          ctx.strokeRect(box.x, box.y, box.w, box.h);
+          ctx.setLineDash([]);
+          ctx.restore();
+          drawAnimalFace(ctx, box, state.animalKey);
+        }
+      }
+
+      function setAnimal(key) {
+        state.animalKey = key;
+        currentAnimal.textContent = ANIMALS[key].label;
+        document.querySelectorAll('[data-animal]').forEach((btn) => btn.classList.toggle('active', btn.dataset.animal === key));
+        setStatus(`${ANIMALS[key].label} 필터를 선택했습니다.`);
+        if (state.lastFaces.length) drawOverlay(state.lastFaces);
+      }
+
+      function buildAnimalButtons() {
+        for (const key of ORDER) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn';
+          btn.dataset.animal = key;
+          btn.textContent = ANIMALS[key].label;
+          btn.addEventListener('click', () => setAnimal(key));
+          animalButtons.appendChild(btn);
+        }
+      }
+
+      function stopCamera() {
+        state.running = false;
+        if (state.stream) {
+          for (const track of state.stream.getTracks()) track.stop();
+        }
+        state.stream = null;
+        video.srcObject = null;
+        cameraState.textContent = '카메라 꺼짐';
+        snapshotBtn.disabled = true;
+        startCameraBtn.textContent = '카메라 시작';
+        drawOverlay(state.previewFaces || []);
+      }
+
+      async function startCamera() {
+        try {
+          if (!navigator.mediaDevices?.getUserMedia) {
+            throw new Error('이 브라우저는 카메라 API를 지원하지 않습니다.');
+          }
+          if (state.running) {
+            stopCamera();
+            return;
+          }
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+          state.stream = stream;
+          video.srcObject = stream;
+          await video.play();
+          state.running = true;
+          cameraState.textContent = '카메라 켜짐';
+          startCameraBtn.textContent = '카메라 끄기';
+          snapshotBtn.disabled = false;
+          hintBox.style.display = 'none';
+          setStatus('카메라가 연결되었습니다. 얼굴을 화면 안에 두세요.');
+          syncCanvasSize();
+          setupDetector();
+          detectLoop();
+        } catch (error) {
+          cameraState.textContent = '실패';
+          setStatus(error.message || '카메라를 시작하지 못했습니다.');
+          console.error(error);
+        }
+      }
+
+      async function setupDetector() {
+        if (state.detector || !('FaceDetector' in window)) {
+          detectorState.textContent = 'FaceDetector ' + ('FaceDetector' in window ? '준비됨' : '미지원');
+          return;
+        }
+        try {
+          state.detector = new FaceDetector({ fastMode: true, maxDetectedFaces: 1 });
+          detectorState.textContent = 'FaceDetector 준비됨';
+        } catch (error) {
+          detectorState.textContent = 'FaceDetector 실패';
+          console.warn(error);
+        }
+      }
+
+      async function detectLoop() {
+        if (!state.running) return;
+        if (state.detector && !state.detectBusy && video.readyState >= 2) {
+          state.detectBusy = true;
+          try {
+            const faces = await state.detector.detect(video);
+            state.lastFaces = faces.length ? faces : [];
+            if (faces.length) {
+              setStatus(`얼굴 ${faces.length}개 감지됨 — ${ANIMALS[state.animalKey].label} 필터 적용 중`);
+            } else {
+              setStatus('얼굴을 찾는 중입니다.');
+            }
+            drawOverlay(state.lastFaces);
+          } catch (error) {
+            detectorState.textContent = '감지 오류';
+            console.warn(error);
+          } finally {
+            state.detectBusy = false;
+          }
+        } else if (state.previewFaces) {
+          drawOverlay(state.previewFaces);
+        }
+        requestAnimationFrame(detectLoop);
+      }
+
+      function snapshot() {
+        if (!video.videoWidth || !video.videoHeight) return;
+        const snap = document.createElement('canvas');
+        snap.width = video.videoWidth;
+        snap.height = video.videoHeight;
+        const sctx = snap.getContext('2d');
+        sctx.drawImage(video, 0, 0, snap.width, snap.height);
+        const faces = state.lastFaces.length ? state.lastFaces : state.previewFaces || [];
+        for (const face of faces) {
+          const box = face.boundingBox || face;
+          drawAnimalFace(sctx, box, state.animalKey);
+        }
+        const link = document.createElement('a');
+        link.download = `beanimal-${state.animalKey}-${Date.now()}.png`;
+        link.href = snap.toDataURL('image/png');
+        link.click();
+      }
+
+      function setPreviewFace(box) {
+        state.previewFaces = [{ boundingBox: { x: box[0], y: box[1], width: box[2], height: box[3] } }];
+        state.lastFaces = state.previewFaces;
+        syncCanvasSize();
+        drawOverlay(state.previewFaces);
+      }
+
+      function clearPreview() {
+        state.previewFaces = null;
+        state.lastFaces = [];
+        drawOverlay([]);
+      }
+
+      window.__beanimal = {
+        state,
+        setAnimal,
+        previewFace: (box = [220, 120, 200, 240]) => setPreviewFace(box),
+        clearPreview,
+        drawAnimalFace,
+        drawOverlay,
+      };
+
+      buildAnimalButtons();
+      setAnimal('cat');
+      drawOverlay([]);
+      setupDetector();
+
+      startCameraBtn.addEventListener('click', startCamera);
+      snapshotBtn.addEventListener('click', snapshot);
+      window.addEventListener('resize', () => {
+        syncCanvasSize();
+        if (state.previewFaces) drawOverlay(state.previewFaces);
+        else if (state.lastFaces.length) drawOverlay(state.lastFaces);
+      });
+      window.addEventListener('keydown', (event) => {
+        if (event.target && ['INPUT', 'TEXTAREA'].includes(event.target.tagName)) return;
+        const idx = Number.parseInt(event.key, 10);
+        if (Number.isInteger(idx) && idx >= 1 && idx <= ORDER.length) {
+          setAnimal(ORDER[idx - 1]);
+        }
+        if (event.key.toLowerCase() === 'c') startCamera();
+        if (event.key.toLowerCase() === 's') snapshot();
+      });
+    </script>
+  </body>
+</html>
